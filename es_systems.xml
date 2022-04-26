@@ -1468,4 +1468,13 @@
         <platform>tools</platform>
         <theme>tools</theme>
     </system>
+    <system>
+		<fullname>Screenshots</fullname>
+		<name>imageviewer</name>
+		<path>%ROMPATH%/../screenshots</path>
+		<extension>.jpg .jpeg .png .bmp .psd .tga .gif .hdr .pic .ppm .pgm .mkv .pdf .mp4 .avi</extension>
+		<command>%ROM%</command>
+		<platform>imageviewer</platform>
+		<theme>imageviewer</theme>
+	</system>
 </systemList>

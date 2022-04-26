@@ -168,4 +168,11 @@
             <entry>~/bin/yuzu*.AppImage</entry>
         </rule>
     </emulator>
+    <emulator name="imageviewer">
+        <rule type="systempath">
+            <entry>retroarch</entry>
+            <entry>org.libretro.RetroArch</entry>
+            <entry>RetroArch-Linux-x86_64.AppImage</entry>
+        </rule>
+    </emulator>
 </ruleList>
