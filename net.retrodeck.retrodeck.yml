@@ -877,6 +877,23 @@ modules:
         commit: e9570d1a0045926f63ec8ea9af68f81743d4f365
 
   # RPCS3 - END
+
+  # Vita3K - START
+  # https://github.com/Vita3K/Vita3K
+
+  - name: vita3k
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain/linux-x64.cmake
+      - -B build-linux
+      - -S .
+    post-install:
+    sources:
+      - type: git
+        url: https://github.com/Vita3K/Vita3K.git
+        branch: b1427a461201cc7200a0344247c3680d7f60a6d8
+
+  # Vita3k - END
   
   # PRIMEHACK - START
   # https://github.com/flathub/io.github.shiiion.primehack
