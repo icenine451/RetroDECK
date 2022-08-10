@@ -90,7 +90,7 @@ modules:
         url: https://github.com/XargonWan/RetroDECK.git
         branch: cooker
 
-  - rd-submodules/xmlstarlet.yml
+  - rd-submodules/lib/xmlstarlet.yml
 
   # mesa repo got a double certificate issue and gnutils cannot handle that so GLU download fails,
   # this affects even the shared-modules's glu so I have to replace it temporarly
