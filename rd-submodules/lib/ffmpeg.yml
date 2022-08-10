@@ -1,0 +1,15 @@
+- name: ffmpeg
+    config-opts:
+      - --disable-static
+      - --disable-programs
+      - --disable-doc
+      - --enable-gpl
+      - --enable-shared
+      - --enable-libvorbis
+      - --enable-libopus
+      - --enable-libvpx
+      - --enable-postproc
+    sources:
+      - type: git
+        url: https://github.com/FFmpeg/FFmpeg.git
+        tag: n5.0
