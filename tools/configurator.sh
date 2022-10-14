@@ -44,19 +44,9 @@ pcsx2vmconf="/var/config/PCSX2/inis/PCSX2_vm.ini"
 # Configurator Option Tree
 
 # Welcome
-#     - Move Directories
-#       - Migrate ROM directory
-#       - Migrate BIOS directory
-#       - Migrate downloaded_media
 #     - Change Emulator Options
 #         - RetroArch
 #           - Change Rewind Setting
-#           - Enable/disable borders
-#           - Enable disable widescreen
-#     - Add or Update Files
-#       - Add specific cores
-#       - Grab all missing cores
-#       - Update all cores to nightly
 #     - RetroAchivement login
 #       - Login prompt
 #     - Reset RetroDECK
@@ -103,7 +93,6 @@ configurator_reset_dialog() {
         --text="Which emulator do you want to reset to default?" \
         --hide-header \
         --column=emulator \
-        "RetroArch" \
         "Citra" \
         "Dolphin" \
         "Duckstation" \
@@ -115,11 +104,6 @@ configurator_reset_dialog() {
         "Yuzu")
 
         case $emulator_to_reset in
-
-        "RetroArch" )
-            debug_dialog "ra_init"
-            configurator_process_complete_dialog "resetting $emulator_to_reset"
-            ;;
 
         "Citra" )
             debug_dialog "citra_init"
@@ -223,11 +207,6 @@ configurator_retroachivement_dialog() {
     debug_dialog "sed -i "s%cheevos_enable =.*%cheevos_enable = \"true\"%" $raconf\n\nsed -i "s%cheevos_username =.*%cheevos_username = \"$user\"%" $raconf\n\nsed -i "s%cheevos_password =.*%cheevos_password = \"$pass\"%" $raconf"
 
     configurator_process_complete_dialog "logging in to RetroAchievements"
-}
-
-configurator_update_dialog() {
-    configurator_generic_dialog "This feature is not available yet"
-    configurator_welcome_dialog
 }
 
 configurator_power_user_changes_dialog() {
@@ -382,201 +361,6 @@ configurator_options_dialog() {
         ;;
 
     esac
-}
-
-configurator_move_dialog() {
-    choice=$(zenity --list --title="RetroDECK Configurator Utility - Move Directories" --cancel-label="Back" --width=800 --height=600 \
-    --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
-    --column="Choice" --column="Action" \
-    "Move ROMs" "Move your ROMs directory to a new location" \
-    "Move BIOS" "Move your BIOS directory to a new location" \
-    "Move Downloaded Media" "Move your downloaded media directory to a new location" )
-
-    case $choice in
-
-    "Move ROMs" )
-        if [[ -d $roms_folder ]]; then
-            configurator_generic_dialog "The current ROMs folder was found at $roms_folder.\n\nPlease select the location you would like to move it."
-            destination=$(configurator_destination_choice_dialog "ROMs" "Please choose a destination for the ROMs folder.")
-            case $destination in
-            "Back" )
-                configurator_move_dialog
-            ;;
-            "Internal Storage" )
-                if [[ $roms_folder == "$rdhome/roms" ]]; then
-                    configurator_generic_dialog "The ROMs folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving ROMs folder to $destination"
-                    move $roms_folder "$rdhome/roms"
-                    roms_folder="$rdhome/roms"
-                    debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the ROMs directory to internal storage"
-                fi
-            ;;
-            "SD Card" )
-                if [[ $roms_folder == "$sdcard/retrodeck/roms" ]]; then
-                    configurator_generic_dialog "The ROMs folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving ROMs folder to $destination"
-                    move $roms_folder "$sdcard/retrodeck/roms"
-                    roms_folder="$sdcard/retrodeck/roms"
-                    debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the ROMs directory to SD card"
-                fi
-            ;;
-            "Custom Location" )
-                configurator_generic_dialog "Please select the custom location to move the ROMs folder to."
-                destination=$(browse "ROMs directory destination")
-                if [[ $destination == $roms_folder ]]; then
-                    configurator_generic_dialog "The ROMs folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving ROMs folder from $roms_folder\n\nto $destination.\n\nClick OK to continue."
-                    move $roms_folder $destination
-                    roms_folder=$destination
-                    debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the ROMs directory to $destination"
-                fi
-            ;;
-            esac
-        else
-            configurator_generic_dialog "The ROMs folder was not found at the configured location.\n\nThis may have happened if the folder was moved manually.\n\nPlease select the current location of the ROMs folder."
-            roms_folder=$(browse "ROMs directory location")
-            conf_write
-            configurator_generic_dialog "ROMs folder now configured at $roms_folder. Please start the moving process again."
-            configurator_move_dialog
-        fi
-    ;;
-
-    "Move BIOS" )
-        if [[ -d $bios_folder ]]; then
-            configurator_generic_dialog "The current BIOS folder was found at $bios_folder.\n\nPlease select the location you would like to move it."
-            destination=$(configurator_destination_choice_dialog "BIOS" "Please choose a destination for the BIOS folder.")
-            case $destination in
-            "Back" )
-                configurator_move_dialog
-            ;;
-            "Internal Storage" )
-                if [[ $bios_folder == "$rdhome/bios" ]]; then
-                    configurator_generic_dialog "The BIOS folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving BIOS folder to $destination"
-                    move $bios_folder "$rdhome/bios"
-                    bios_folder="$rdhome/bios"
-                    debug_dialog "dir_prep $bios_folder "$rdhome/bios""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the BIOS directory to internal storage"
-                fi
-            ;;
-            "SD Card" )
-                if [[ $bios_folder == "$sdcard/retrodeck/bios" ]]; then
-                    configurator_generic_dialog "The BIOS folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving BIOS folder to $destination"
-                    move $bios_folder "$sdcard/retrodeck/bios"
-                    bios_folder="$sdcard/retrodeck/bios"
-                    debug_dialog "dir_prep $bios_folder "$rdhome/bios""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the BIOS directory to SD card"
-                fi
-            ;;
-            "Custom Location" )
-                configurator_generic_dialog "Please select the custom location to move the BIOS folder to."
-                destination=$(browse "BIOS directory destination")
-                if [[ $destination == $bios_folder ]]; then
-                    configurator_generic_dialog "The BIOS folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving BIOS folder from $bios_folder\n\nto $destination.\n\nClick OK to continue."
-                    move $bios_folder $destination
-                    bios_folder=$destination
-                    debug_dialog "dir_prep $bios_folder "$rdhome/bios""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the BIOS directory to $destination"
-                fi
-            ;;
-            esac
-        else
-            configurator_generic_dialog "The BIOS folder was not found at the configured location.\n\nThis may have happened if the folder was moved manually.\n\nPlease select the current location of the BIOS folder."
-            bios_folder=$(browse "BIOS directory location")
-            conf_write
-            configurator_generic_dialog "BIOS folder now configured at $bios_folder. Please start the moving process again."
-            configurator_move_dialog
-        fi
-    ;;
-
-    "Move Downloaded Media" )
-        if [[ -d $media_folder ]]; then
-            configurator_generic_dialog "The current media folder was found at $media_folder.\n\nPlease select the location you would like to move it."
-            destination=$(configurator_destination_choice_dialog "Media" "Please choose a destination for the Media folder.")
-            case $destination in
-            "Back" )
-                configurator_move_dialog
-            ;;
-            "Internal Storage" )
-                if [[ $media_folder == "$rdhome/downloaded_media" ]]; then
-                    configurator_generic_dialog "The media folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving media folder to $destination"
-                    move $media_folder "$rdhome/downloaded_media"
-                    media_folder="$rdhome/downloaded_media"
-                    debug_dialog "dir_prep $media_folder "$rdhome/downloaded_media""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the media directory to internal storage"
-                fi
-            ;;
-            "SD Card" )
-                if [[ $media_folder == "$sdcard/retrodeck/downloaded_media" ]]; then
-                    configurator_generic_dialog "The media folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving media folder to $destination"
-                    move $media_folder "$sdcard/retrodeck/downloaded_media"
-                    media_folder="$sdcard/retrodeck/downloaded_media"
-                    debug_dialog "dir_prep $media_folder "$rdhome/downloaded_media""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the media directory to SD card"
-                fi
-            ;;
-            "Custom Location" )
-                configurator_generic_dialog "Please select the custom location to move the media folder to."
-                destination=$(browse "Media directory destination")
-                if [[ $destination == $media_folder ]]; then
-                    configurator_generic_dialog "The media folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving media folder from $media_folder\n\nto $destination.\n\nClick OK to continue."
-                    move $media_folder $destination
-                    media_folder=$destination
-                    debug_dialog "dir_prep $media_folder "$rdhome/downloaded_media""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the media directory to $destination"
-                fi
-            ;;
-            esac
-        else
-            configurator_generic_dialog "The media folder was not found at the configured location.\n\nThis may have happened if the folder was moved manually.\n\nPlease select the current location of the media folder."
-            media_folder=$(browse "Media directory location")
-            conf_write
-            configurator_generic_dialog "Media folder now configured at $media_folder. Please start the moving process again."
-            configurator_move_dialog
-        fi
-    ;;
-
-    "" ) # No selection made or Back button clicked
-        configurator_welcome_dialog
-    ;;
-
-    esac
-
 }
 
 configurator_welcome_dialog() {
