@@ -221,6 +221,7 @@ ra_init() {
     cp -fv /app/share/libretro/cores/* /var/config/retroarch/cores/
     if [ $overwrite_configs = true ]; then
     cp -fv $emuconfigs/retroarch.cfg /var/config/retroarch/
+    if [ $overwrite_configs = true ]; then
     cp -fv $emuconfigs/retroarch-core-options.cfg /var/config/retroarch/
     #rm -rf $rdhome/bios/bios # in some situations a double bios symlink is created
     sed -i 's#~/retrodeck#'$rdhome'#g' /var/config/retroarch/retroarch.cfg
