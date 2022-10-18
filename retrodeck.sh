@@ -281,19 +281,17 @@ post_update() {
     mkdir -pv $rdhome/.logs #this was added later, maybe safe to remove in a few versions
 
 
-    # Resetting es_settings, now we need it but in the future I should think a better solution, maybe with sed
-    cp -fv /app/retrodeck/es_settings.xml /var/config/emulationstation/.emulationstation/es_settings.xml
-
-
     # 0.4 -> 0.5
     # Perform save and state migration if needed
 
-    # Moving PCSX2 Saves
-    mv -fv /var/config/PCSX2/sstates/* $rdhome/states/ps2/pcsx2
-    mv -fv /var/config/PCSX2/memcards/* $rdhome/saves/ps2/memcards
+    # Moving PCSX2 Saves if needed
+    if [[ -d /var/config/PCSX2 ]]; then
+      mv -fv /var/config/PCSX2/sstates/* $rdhome/states/ps2/pcsx2
+      mv -fv /var/config/PCSX2/memcards/* $rdhome/saves/ps2/memcards
+    fi
 
-    # Moving Citra saves from legacy location to 0.5.0b structure
-
+    # Moving Citra saves from legacy location to 0.5.0b structure if needed
+    if [[ -d $rdhome/saves/Citra ]]; then
     mv -fv $rdhome/saves/Citra/* $rdhome/saves/n3ds/citra
     rmdir $rdhome/saves/Citra # Old folder cleanup
 
@@ -420,6 +418,15 @@ post_update() {
       echo "Version" $version "is after the save and state organization was changed, no need to sort again"
     fi
 
+    if [[ $(sed -e "s/\.//g" <<< $hard_version) > $(sed -e "s/\.//g" <<< $versionwheresaveschanged) ]] && [[ ! $(sed -e "s/\.//g" <<< $version) > $(sed -e "s/\.//g" <<< $versionwheresaveschanged) ]]; then # Check if user is upgrading from the version where save organization was changed.
+      overwrite_configs=true
+    fi
+
+    if [ $overwrite_configs = true ]; then
+      cp -fv /app/retrodeck/es_settings.xml /var/config/emulationstation/.emulationstation/es_settings.xml # preserve settings if not performing a major update
+    fi
+
+    (
     ra_init
     standalones_init
     tools_init
