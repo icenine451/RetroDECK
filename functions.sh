@@ -8,6 +8,78 @@
 # FUNCTION SECTION
 #=================
 
+browse() {
+    # This function browses for a directory and returns the path chosen
+    # USAGE: path_to_be_browsed_for=$(browse $action_text)
+
+    path_selected=false
+
+    while [ $path_selected == false ]
+    do
+        target="$(zenity --file-selection --title="Choose $1" --directory)"
+        if [ $? == 0 ] #yes
+        then
+            zenity --question --no-wrap --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" --title "RetroDECK" --cancel-label="No" --ok-label "Yes" \
+            --text="Directory $target chosen, is this correct?"
+            if [ $? == 0 ]
+            then
+                path_selected=true
+                echo $target
+                break
+            fi
+        else
+            zenity --question --no-wrap --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" --title "RetroDECK" --cancel-label="No" --ok-label "Yes" \
+            --text="No directory selected. Do you want to return to the main menu?"
+            if [ $? == 1 ]
+            then
+                configurator_welcome_dialog
+            fi
+        fi
+    done
+}
+
+verify_space() {
+    # Function used for verifying adequate space before moving directories around
+    # USAGE: verify_space $source_dir $dest_dir
+    # Function returns "true" if there is enough space, "false" if there is not
+
+    source_size=$(du -sk /home/deck/retrodeck | awk '{print $1}')
+    source_size=$((source_size+(source_size/10))) # Add 10% to source size for safety
+    dest_avail=$(df -k --output=avail $2 | tail -1)
+
+    if [[ $source_size -ge $dest_avail ]]; then
+        echo "false"
+    else
+        echo "true"
+    fi
+}
+
+move() {
+    # Function to move a directory from one parent to another
+    # USAGE: move $source_dir $dest_dir
+
+    if [[ $(verify_space $1 $2) ]]; then
+        (
+            if [[ ! -d $2 ]]; then # Create destination directory if it doesn't already exist
+                debug_dialog "mkdir -pv $2"
+            fi
+            debug_dialog "mv -v -t $2 $1"
+        ) |
+        zenity --icon-name=net.retrodeck.retrodeck --progress --no-cancel --pulsate --auto-close --width=800 --height=600 \
+        --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
+        --title "RetroDECK Configurator Utility - Move in Progress" \
+        --text="Moving directory $1 to new location of $2, please wait."
+
+    else
+        zenity --icon-name=net.retrodeck.retrodeck --error --no-wrap \
+        --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" --width=800 --height=600 \
+        --title "RetroDECK Configurator Utility - Move Directories" \
+        --text="The destination directory you have selected does not have enough free space for the files you are trying to move.\n\nPlease select a new destination or free up some space."
+
+        configurator_move_dialog
+    fi
+}
+
 set_setting() {
 # Function for editing settings
 # USAGE: set_setting $setting_file $setting_name $new_setting_value $system (needed as different systems use different config file syntax)
@@ -290,6 +362,23 @@ configurator_process_complete_dialog() {
         configurator_welcome_dialog
     fi
 }
+
+configurator_destination_choice_dialog() {
+    # This dialog is for making things easy for new users to move files to common locations. Gives the options for "Internal", "SD Card" and "Custom" locations.
+    # USAGE: $(configurator_destination_choice_dialog "folder being moved" "action text")
+    # This function returns one of the values: "Back" "Internal Storage" "SD Card" "Custom Location"
+    choice=$(zenity --title "RetroDECK Configurator Utility - Moving $1 folder" --info --no-wrap --ok-label="Back" --extra-button="Internal Storage" --extra-button="SD Card" --extra-button="Custom Location" --width=800 --height=600 \
+    --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
+    --text="$2")
+
+    echo $choice
+}
+
+#=========================
+# MIGRATION FUNCTIONS SECTION
+#=========================
+
+# These functions are used specifically for cleanup actions between versions of RetroDECK
 
 #=========================
 # LEGACY FUNCTIONS SECTION

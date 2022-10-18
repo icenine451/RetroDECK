@@ -44,6 +44,7 @@ pcsx2vmconf="/var/config/PCSX2/inis/PCSX2_vm.ini"
 # Configurator Option Tree
 
 # Welcome
+#     - Move RetroDECK
 #     - Change Emulator Options
 #         - RetroArch
 #           - Change Rewind Setting
@@ -200,11 +201,11 @@ configurator_retroachivement_dialog() {
     user=${arrIN[0]}
     pass=${arrIN[1]}
 
-    #sed -i "s%cheevos_enable =.*%cheevos_enable = \"true\"%" $raconf
-    #sed -i "s%cheevos_username =.*%cheevos_username = \"$user\"%" $raconf
-    #sed -i "s%cheevos_password =.*%cheevos_password = \"$pass\"%" $raconf
+    #set_setting $raconf cheevos_enable true retroarch
+    #set_setting $raconf cheevos_username $user retroarch
+    #set_setting $raconf cheevos_password $pass retroarch
 
-    debug_dialog "sed -i "s%cheevos_enable =.*%cheevos_enable = \"true\"%" $raconf\n\nsed -i "s%cheevos_username =.*%cheevos_username = \"$user\"%" $raconf\n\nsed -i "s%cheevos_password =.*%cheevos_password = \"$pass\"%" $raconf"
+    debug_dialog "set_setting $raconf cheevos_enable true retroarch\n\nset_setting $raconf cheevos_username $user retroarch\n\nset_setting $raconf cheevos_password $pass retroarch"
 
     configurator_process_complete_dialog "logging in to RetroAchievements"
 }
@@ -363,6 +364,72 @@ configurator_options_dialog() {
     esac
 }
 
+configurator_move_dialog() {
+        if [[ -d $rdhome ]]; then
+            configurator_generic_dialog "This option will move the RetroDECK data folder (ROMs, saves, BIOS etc.) to a new location.\n\nPlease choose where to move the RetroDECK data folder."
+            destination=$(configurator_destination_choice_dialog "RetroDECK Data" "Please choose a destination for the RetroDECK data folder.")
+            case $destination in
+            "Back" )
+                configurator_move_dialog
+            ;;
+            "Internal Storage" )
+                if [[ ! -L $rdhome && -d $rdhome ]]; then
+                    configurator_generic_dialog "The RetroDECK data folder is already at that location, please pick a new one."
+                    configurator_move_dialog
+                else
+                    configurator_generic_dialog "Moving RetroDECK data folder to $destination"
+                    move $roms_folder "$rdhome/roms"
+                    debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
+                    debug_dialog "conf_write"
+                    configurator_process_complete_dialog "moving the RetroDECK data directory to internal storage"
+                fi
+            ;;
+            "SD Card" )
+                if [[ -L $rdhome && -d $rdhome  && -d $sdcard/retrodeck/roms ]]; then
+                    configurator_generic_dialog "The RetroDECK data folder is already at that location, please pick a new one."
+                    configurator_move_dialog
+                else
+                    configurator_generic_dialog "Moving RetroDECK data folder to $destination"
+                    move $roms_folder "$sdcard/retrodeck/roms"
+                    roms_folder="$sdcard/retrodeck/roms"
+                    debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
+                    debug_dialog "conf_write"
+                    configurator_process_complete_dialog "moving the RetroDECK data directory to SD card"
+                fi
+            ;;
+            "Custom Location" )
+                configurator_generic_dialog "Please select the custom location to move the RetroDECK data folder to."
+                destination=$(browse "RetroDECK data directory destination")
+                if [[ $destination == $roms_folder ]]; then
+                    configurator_generic_dialog "The RetroDECK data folder is already at that location, please pick a new one."
+                    configurator_move_dialog
+                else
+                    configurator_generic_dialog "Moving RetroDECK data folder from $roms_folder\n\nto $destination.\n\nClick OK to continue."
+                    move $roms_folder $destination
+                    roms_folder=$destination
+                    debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
+                    debug_dialog "conf_write"
+                    configurator_process_complete_dialog "moving the ROMs directory to $destination"
+                fi
+            ;;
+            esac
+        else
+            configurator_generic_dialog "The RetroDECK data folder was not found at the expected location.\n\nThis may have happened if the folder was moved manually.\n\nPlease select the current location of the RetroDECK data folder."
+            rdhome=$(browse "RetroDECK directory location")
+            conf_write
+            configurator_generic_dialog "RetroDECK data folder now configured at $rdhome. Please start the moving process again."
+            configurator_move_dialog
+        fi
+    ;;
+
+    "" ) # No selection made or Back button clicked
+        configurator_welcome_dialog
+    ;;
+
+    esac
+
+}
+
 configurator_welcome_dialog() {
     # Clear the variables
     source=
@@ -374,7 +441,7 @@ configurator_welcome_dialog() {
     choice=$(zenity --list --title="RetroDECK Configurator Utility" --cancel-label="Quit" --width=800 --height=600 \
     --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
     --column="Choice" --column="Action" \
-    "Move Files" "Move files between internal/SD card or to custom locations" \
+    "Move RetroDECK" "Move RetroDECK files (ROMs, BIOS, saves, etc.) to a new location" \
     "Change Options" "Adjust how RetroDECK behaves" \
     "Update" "Update parts of RetroDECK" \
     "RetroAchivements" "Log in to RetroAchievements" \
@@ -382,7 +449,7 @@ configurator_welcome_dialog() {
 
     case $choice in
 
-    "Move Files" )
+    "Move RetroDECK" )
         configurator_move_dialog
         ;;
 
