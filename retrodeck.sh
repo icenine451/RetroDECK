@@ -221,10 +221,12 @@ ra_init() {
     cp -fv /app/share/libretro/cores/* /var/config/retroarch/cores/
     if [ $overwrite_configs = true ]; then
     cp -fv $emuconfigs/retroarch.cfg /var/config/retroarch/
-    if [ $overwrite_configs = true ]; then
+    if [[ overwrite_configs ]]; then
     cp -fv $emuconfigs/retroarch-core-options.cfg /var/config/retroarch/
-    #rm -rf $rdhome/bios/bios # in some situations a double bios symlink is created
     sed -i 's#~/retrodeck#'$rdhome'#g' /var/config/retroarch/retroarch.cfg
+    fi
+    #rm -rf $rdhome/bios/bios # in some situations a double bios symlink is created
+
 
     # PPSSPP
     echo "--------------------------------"
@@ -314,10 +316,11 @@ post_update() {
     if [[ -d $rdhome/saves/Citra ]]; then
     mv -fv $rdhome/saves/Citra/* $rdhome/saves/n3ds/citra
     rmdir $rdhome/saves/Citra # Old folder cleanup
+    fi
 
     versionwheresaveschanged="0.4.5b" # Hardcoded break point between unsorted and sorted saves
 
-    if [[ $(sed -e "s/\.//g" <<< $hard_version) > $(sed -e "s/\.//g" <<< $versionwheresaveschanged) ]] && [[ ! $(sed -e "s/\.//g" <<< $hard_version) == $(sed -e "s/\.//g" <<< $version) ]]; then # Check if user is upgrading from the version where save organization was changed. Try not to reuse this, it things 0.4.5b is newer than 0.4.5
+    if [[ $(sed -e "s/\.//g" <<< $hard_version) > $(sed -e "s/\.//g" <<< $versionwheresaveschanged) ]] && [[ ! $(sed -e "s/\.//g" <<< $version) > $(sed -e "s/\.//g" <<< $versionwheresaveschanged) ]]; then # Check if user is upgrading from the version where save organization was changed. Try not to reuse this, it things 0.4.5b is newer than 0.4.5
         migration_logfile=$rdhome/.logs/savemove_"$(date +"%Y_%m_%d_%I_%M_%p").log"
         save_backup_file=$rdhome/savebackup_"$(date +"%Y_%m_%d_%I_%M_%p").zip"
         state_backup_file=$rdhome/statesbackup_"$(date +"%Y_%m_%d_%I_%M_%p").zip"
@@ -442,16 +445,13 @@ post_update() {
       overwrite_configs=true
     fi
 
-    if [ $overwrite_configs = true ]; then
-      cp -fv /app/retrodeck/es_settings.xml /var/config/emulationstation/.emulationstation/es_settings.xml # preserve settings if not performing a major update
-    fi
-
-    (
     ra_init
     standalones_init
     tools_init
 
     create_lock
+
+    overwrite_configs=false
 }
 
 start_retrodeck() {
