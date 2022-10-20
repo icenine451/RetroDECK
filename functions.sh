@@ -63,21 +63,62 @@ move() {
             if [[ ! -d $2 ]]; then # Create destination directory if it doesn't already exist
                 debug_dialog "mkdir -pv $2"
             fi
-            debug_dialog "mv -v -t $2 $1"
+            debug_dialog "mv -t $2 $1"
         ) |
-        zenity --icon-name=net.retrodeck.retrodeck --progress --no-cancel --pulsate --auto-close --width=800 --height=600 \
+        zenity --icon-name=net.retrodeck.retrodeck --progress --no-cancel --pulsate --auto-close \
         --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
         --title "RetroDECK Configurator Utility - Move in Progress" \
         --text="Moving directory $1 to new location of $2, please wait."
 
     else
         zenity --icon-name=net.retrodeck.retrodeck --error --no-wrap \
-        --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" --width=800 --height=600 \
+        --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
         --title "RetroDECK Configurator Utility - Move Directories" \
         --text="The destination directory you have selected does not have enough free space for the files you are trying to move.\n\nPlease select a new destination or free up some space."
 
         configurator_move_dialog
     fi
+}
+
+dir_prep() {
+    # This script is creating a symlink preserving old folder contents and moving them in the new one
+
+    # Call me with:
+    # dir prep "real dir" "symlink location"
+    real="$1"
+    symlink="$2"
+
+    echo -e "\n[DIR PREP]\nMoving $symlink in $real" #DEBUG
+
+    # if the dest dir exists we want to backup it
+    if [ -d "$symlink" ];
+    then
+      echo "$symlink found" #DEBUG
+      move "$symlink" "$symlink.old"
+    fi
+
+    # if the real dir doesn't exist we create it
+    if [ ! -d "$real" ];
+    then
+      echo "$real not found, creating it" #DEBUG
+      mkdir -pv "$real"
+    fi
+
+    # creating the symlink
+    echo "linking $real in $symlink" #DEBUG
+    mkdir -pv "$(dirname "$symlink")" # creating the full path except the last folder
+    ln -sv "$real" "$symlink"
+
+    # moving everything from the old folder to the new one, delete the old one
+    if [ -d "$symlink.old" ];
+    then
+      echo "Moving the data from $symlink.old to $real" #DEBUG
+      move "$symlink".old/* $real
+      echo "Removing $symlink.old" #DEBUG
+      rm -rf "$symlink.old"
+    fi
+
+    echo -e "$symlink is now $real\n"
 }
 
 set_setting() {
@@ -343,7 +384,7 @@ debug_dialog() {
     # This function is for displaying commands run by the Configurator without actually running them
     # USAGE: debug_dialog "command"
 
-    zenity --icon-name=net.retrodeck.retrodeck --info --no-wrap --width=800 --height=600 \
+    zenity --icon-name=net.retrodeck.retrodeck --info --no-wrap \
     --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
     --title "RetroDECK Configurator Utility - Debug Dialog" \
     --text="$1"
@@ -352,7 +393,7 @@ debug_dialog() {
 configurator_process_complete_dialog() {
     # This dialog shows when a process is complete.
     # USAGE: configurator_process_complete_dialog "process text"
-    zenity --icon-name=net.retrodeck.retrodeck --info --no-wrap --ok-label="Quit" --extra-button="OK" --width=800 --height=600 \
+    zenity --icon-name=net.retrodeck.retrodeck --info --no-wrap --ok-label="Quit" --extra-button="OK" \
     --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
     --title "RetroDECK Configurator Utility - Process Complete" \
     --text="The process of $1 is now complete.\n\nYou may need to quit and restart RetroDECK for your changes to take effect\n\nClick OK to return to the Main Menu or Quit to return to RetroDECK."
@@ -367,7 +408,7 @@ configurator_destination_choice_dialog() {
     # This dialog is for making things easy for new users to move files to common locations. Gives the options for "Internal", "SD Card" and "Custom" locations.
     # USAGE: $(configurator_destination_choice_dialog "folder being moved" "action text")
     # This function returns one of the values: "Back" "Internal Storage" "SD Card" "Custom Location"
-    choice=$(zenity --title "RetroDECK Configurator Utility - Moving $1 folder" --info --no-wrap --ok-label="Back" --extra-button="Internal Storage" --extra-button="SD Card" --extra-button="Custom Location" --width=800 --height=600 \
+    choice=$(zenity --title "RetroDECK Configurator Utility - Moving $1 folder" --info --no-wrap --ok-label="Back" --extra-button="Internal Storage" --extra-button="SD Card" \
     --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
     --text="$2")
 
@@ -385,47 +426,6 @@ configurator_destination_choice_dialog() {
 #=========================
 
 # These functions were pulled from retrodeck.sh or global.sh and should be consolidated eventually
-
-dir_prep() {
-    # This script is creating a symlink preserving old folder contents and moving them in the new one
-
-    # Call me with:
-    # dir prep "real dir" "symlink location"
-    real="$1"
-    symlink="$2"
-
-    echo -e "\n[DIR PREP]\nMoving $symlink in $real" #DEBUG
-
-    # if the dest dir exists we want to backup it
-    if [ -d "$symlink" ];
-    then
-      echo "$symlink found" #DEBUG
-      mv -fv "$symlink" "$symlink.old"
-    fi
-
-    # if the real dir doesn't exist we create it
-    if [ ! -d "$real" ];
-    then
-      echo "$real not found, creating it" #DEBUG
-      mkdir -pv "$real"
-    fi
-
-    # creating the symlink
-    echo "linking $real in $symlink" #DEBUG
-    mkdir -pv "$(dirname "$symlink")" # creating the full path except the last folder
-    ln -sv "$real" "$symlink"
-
-    # moving everything from the old folder to the new one, delete the old one
-    if [ -d "$symlink.old" ];
-    then
-      echo "Moving the data from $symlink.old to $real" #DEBUG
-      mv -fv "$symlink".old/* $real
-      echo "Removing $symlink.old" #DEBUG
-      rm -rf "$symlink.old"
-    fi
-
-    echo -e "$symlink is now $real\n"
-}
 
 tools_init() {
     rm -rfv /var/config/retrodeck/tools/

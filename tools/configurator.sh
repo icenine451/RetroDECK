@@ -71,7 +71,7 @@ pcsx2vmconf="/var/config/PCSX2/inis/PCSX2_vm.ini"
 # DIALOG TREE FUNCTIONS
 
 configurator_reset_dialog() {
-    choice=$(zenity --list --title="RetroDECK Configurator Utility - Reset Options" --cancel-label="Back" --width=800 --height=600 \
+    choice=$(zenity --list --title="RetroDECK Configurator Utility - Reset Options" --cancel-label="Back" \
     --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
     --column="Choice" --column="Action" \
     "Reset RetroArch" "Reset RetroArch to default settings" \
@@ -89,7 +89,7 @@ configurator_reset_dialog() {
 
     "Reset Specific Standalone" )
         emulator_to_reset=$(zenity --list \
-        --title "RetroDECK Configurator Utility - Reset Specific Standalone Emulator" --cancel-label="Back" --width=800 --height=600 \
+        --title "RetroDECK Configurator Utility - Reset Specific Standalone Emulator" --cancel-label="Back" \
         --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
         --text="Which emulator do you want to reset to default?" \
         --hide-header \
@@ -169,7 +169,7 @@ configurator_reset_dialog() {
         ;;
 
     "Reset All" )
-        zenity --icon-name=net.retrodeck.retrodeck --info --no-wrap --width=800 --height=600 \
+        zenity --icon-name=net.retrodeck.retrodeck --info --no-wrap \
         --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
         --title "RetroDECK Configurator Utility - Reset RetroDECK" \
         --text="You are resetting RetroDECK to its default state.\n\nAfter the process is complete you will need to exit RetroDECK and run it again."
@@ -185,7 +185,7 @@ configurator_reset_dialog() {
 }
 
 configurator_retroachivement_dialog() {
-    login=$(zenity --forms --title="RetroDECK Configurator Utility - RetroAchievements Login" --cancel-label="Back" --width=800 --height=600 \
+    login=$(zenity --forms --title="RetroDECK Configurator Utility - RetroAchievements Login" --cancel-label="Back" \
         --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
         --text="Enter your RetroAchievements Account details.\n\nBe aware that this tool cannot verify your login details.\nFor registration and more info visit\nhttps://retroachievements.org/\n" \
         --separator="=SEP=" \
@@ -211,19 +211,10 @@ configurator_retroachivement_dialog() {
 }
 
 configurator_power_user_changes_dialog() {
-    zenity --title "RetroDECK Configurator Utility - Power User Options" --question --no-wrap --cancel-label="Back" --width=800 --height=600 \
-    --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
-    --text="Making manual changes to an emulators configuration may create serious issues,\nand some settings may be overwitten during RetroDECK updates.\n\nplease continue only if you know what you're doing.\n\nDo you want to continue?"
-
-    if [ $? == 1 ] # Cancel button clicked
-    then
-        configurator_options_dialog
-    fi
-
     emulator=$(zenity --list \
-    --title "RetroDECK Configurator Utility - Power User Options" --cancel-label="Back" --width=800 --height=600 \
+    --title "RetroDECK Configurator Utility - Power User Options" --cancel-label="Back" \
     --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
-    --text="Which emulator do you want to configure?" \
+    --text="Making manual changes to an emulators configuration may create serious issues,\nand some settings may be overwitten during RetroDECK updates.\n\nplease continue only if you know what you're doing!\n\nWhich emulator do you want to configure?" \
     --hide-header \
     --column=emulator \
     "RetroArch" \
@@ -293,7 +284,7 @@ configurator_power_user_changes_dialog() {
 
 configurator_retroarch_rewind_dialog() {
     if [[ $(get_setting $raconf rewind_enable retroarch) == "true" ]]; then
-        zenity --question --width=800 --height=600 \
+        zenity --question \
         --no-wrap --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
         --title "RetroDECK Configurator - Rewind" \
         --text="Rewind is currently enabled. Do you want to disable it?."
@@ -306,7 +297,7 @@ configurator_retroarch_rewind_dialog() {
             configurator_options_dialog
         fi
     else
-        zenity --question --width=800 --height=600 \
+        zenity --question \
         --no-wrap --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
         --title "RetroDECK Configurator - Rewind" \
         --text="Rewind is currently disabled, do you want to enable it?\n\nNOTE:\nThis may impact performance expecially on the latest systems."
@@ -322,7 +313,7 @@ configurator_retroarch_rewind_dialog() {
 }
 
 configurator_retroarch_options_dialog() {
-    choice=$(zenity --list --title="RetroDECK Configurator Utility - RetroArch Options" --cancel-label="Back" --width=800 --height=600 \
+    choice=$(zenity --list --title="RetroDECK Configurator Utility - RetroArch Options" --cancel-label="Back" \
     --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
     --column="Choice" --column="Action" \
     "Change Rewind Setting" "Enable or disable the Rewind function in RetroArch" )
@@ -341,7 +332,7 @@ configurator_retroarch_options_dialog() {
 }
 
 configurator_options_dialog() {
-    choice=$(zenity --list --title="RetroDECK Configurator Utility - Change Options" --cancel-label="Back" --width=800 --height=600 \
+    choice=$(zenity --list --title="RetroDECK Configurator Utility - Change Options" --cancel-label="Back" \
     --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
     --column="Choice" --column="Action" \
     "Change RetroArch Settings" "Change settings specific to RetroArch" \
@@ -373,50 +364,42 @@ configurator_move_dialog() {
                 configurator_move_dialog
             ;;
             "Internal Storage" )
-                if [[ ! -L $rdhome && -d $rdhome ]]; then
+                if [[ ! -L /home/deck/retrodeck && -d /home/deck/retrodeck ]]; then
                     configurator_generic_dialog "The RetroDECK data folder is already at that location, please pick a new one."
                     configurator_move_dialog
                 else
                     configurator_generic_dialog "Moving RetroDECK data folder to $destination"
-                    move $roms_folder "$rdhome/roms"
+                    debug_dialog "rm /home/deck/retrodeck" # Remove symlink for $rdhome
+                    debug_dialog "move $sdcard/retrodeck "/home/deck/""
+                    debug_dialog "roms_folder="$rdhome/roms""
                     debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
                     debug_dialog "conf_write"
                     configurator_process_complete_dialog "moving the RetroDECK data directory to internal storage"
                 fi
             ;;
             "SD Card" )
-                if [[ -L $rdhome && -d $rdhome  && -d $sdcard/retrodeck/roms ]]; then
+                if [[ -L $rdhome && -d $sdcard/retrodeck ]]; then
                     configurator_generic_dialog "The RetroDECK data folder is already at that location, please pick a new one."
                     configurator_move_dialog
                 else
-                    configurator_generic_dialog "Moving RetroDECK data folder to $destination"
-                    move $roms_folder "$sdcard/retrodeck/roms"
-                    roms_folder="$sdcard/retrodeck/roms"
-                    debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the RetroDECK data directory to SD card"
-                fi
-            ;;
-            "Custom Location" )
-                configurator_generic_dialog "Please select the custom location to move the RetroDECK data folder to."
-                destination=$(browse "RetroDECK data directory destination")
-                if [[ $destination == $roms_folder ]]; then
-                    configurator_generic_dialog "The RetroDECK data folder is already at that location, please pick a new one."
-                    configurator_move_dialog
-                else
-                    configurator_generic_dialog "Moving RetroDECK data folder from $roms_folder\n\nto $destination.\n\nClick OK to continue."
-                    move $roms_folder $destination
-                    roms_folder=$destination
-                    debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
-                    debug_dialog "conf_write"
-                    configurator_process_complete_dialog "moving the ROMs directory to $destination"
+                    if [[ ! -w $sdcard ]]; then
+                        configurator_generic_dialog "The SD card was found but is not writable\nThis can happen with cards formatted on PC or for other reasons.\nPlease format the SD card through the Steam Deck's Game Mode and try the moving process again."
+                        configurator_welcome_dialog
+                    else
+                        configurator_generic_dialog "Moving RetroDECK data folder to $destination"
+                        debug_dialog "dir_prep "$sdcard/retrodeck" $rdhome"
+                        debug_dialog "roms_folder="$sdcard/retrodeck/roms""
+                        debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
+                        debug_dialog "conf_write"
+                        configurator_process_complete_dialog "moving the RetroDECK data directory to SD card"
+                    fi
                 fi
             ;;
             esac
         else
             configurator_generic_dialog "The RetroDECK data folder was not found at the expected location.\n\nThis may have happened if the folder was moved manually.\n\nPlease select the current location of the RetroDECK data folder."
-            rdhome=$(browse "RetroDECK directory location")
-            conf_write
+            debug_dialog "rdhome=$(browse "RetroDECK directory location")"
+            debug_dialog "conf_write"
             configurator_generic_dialog "RetroDECK data folder now configured at $rdhome. Please start the moving process again."
             configurator_move_dialog
         fi
@@ -438,7 +421,7 @@ configurator_welcome_dialog() {
     setting=
     setting_value=
 
-    choice=$(zenity --list --title="RetroDECK Configurator Utility" --cancel-label="Quit" --width=800 --height=600 \
+    choice=$(zenity --list --title="RetroDECK Configurator Utility" --cancel-label="Quit" \
     --window-icon="/app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg" \
     --column="Choice" --column="Action" \
     "Move RetroDECK" "Move RetroDECK files (ROMs, BIOS, saves, etc.) to a new location" \
