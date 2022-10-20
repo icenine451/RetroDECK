@@ -2,11 +2,11 @@
 
 # VARIABLES SECTION
 
-rd_conf="retrodeck.cfg" # uncomment for standalone testing
-source functions.sh # uncomment for standalone testing
+#rd_conf="retrodeck.cfg" # uncomment for standalone use
+#source functions.sh # uncomment for standalone use
 
-#source /app/bin/global.sh # uncomment for flatpak testing
-#source /app/libexec/functions.sh # uncomment for flatpak testing
+source /app/bin/global.sh # uncomment for flatpak use
+source /app/libexec/functions.sh # uncomment for flatpak use
 
 # Config files for emulators with single config files
 
