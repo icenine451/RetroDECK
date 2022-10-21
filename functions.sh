@@ -255,7 +255,7 @@ yuzu_init() {
     # configuring Yuzu
     dir_prep "$rdhome/.logs/yuzu" "/var/data/yuzu/log"
     mkdir -pv /var/config/yuzu/
-    cp -fvr $emuconfigs/yuzu/* /var/config/yuzu/
+    cp -fr $emuconfigs/yuzu/* /var/config/yuzu/
     sed -i 's#~/retrodeck#'$rdhome'#g' /var/config/yuzu/qt-config.ini
     dir_prep "$rdhome/screenshots" "/var/data/yuzu/screenshots"
 }
@@ -265,7 +265,7 @@ dolphin_init() {
     echo "Initializing DOLPHIN"
     echo "----------------------"
     mkdir -pv /var/config/dolphin-emu/
-    cp -fvr "$emuconfigs/dolphin/"* /var/config/dolphin-emu/
+    cp -fr "$emuconfigs/dolphin/"* /var/config/dolphin-emu/
     sed -i 's#~/retrodeck#'$rdhome'#g' /var/config/dolphin-emu/Dolphin.ini
     dir_prep "$rdhome/saves/gc/dolphin/EUR" "/var/data/dolphin-emu/GC/EUR"
     dir_prep "$rdhome/saves/gc/dolphin/USA" "/var/data/dolphin-emu/GC/USA"
@@ -282,7 +282,7 @@ pcsx2_init() {
     mkdir -pv "/var/config/PCSX2/inis"
     mkdir -pv "$rdhome/saves/ps2/pcsx2/memcards"
     mkdir -pv "$rdhome/states/ps2/pcsx2"
-    cp -fvr $emuconfigs/PCSX2/* /var/config/PCSX2/inis/
+    cp -fr $emuconfigs/PCSX2/* /var/config/PCSX2/inis/
     sed -i 's#~/retrodeck#'$rdhome'#g' /var/config/PCSX2/inis/PCSX2_ui.ini
     sed -i 's#~/retrodeck#'$rdhome'#g' /var/config/PCSX2/inis/PCSX2.ini
 }
@@ -295,7 +295,7 @@ melonds_init() {
     mkdir -pv "$rdhome/saves/nds/melonds"
     mkdir -pv "$rdhome/states/nds/melonds"
     dir_prep "$rdhome/bios" "/var/config/melonDS/bios"
-    cp -fvr $emuconfigs/melonDS.ini /var/config/melonDS/
+    cp -fr $emuconfigs/melonDS.ini /var/config/melonDS/
     # Replace ~/retrodeck with $rdhome as ~ cannot be understood by MelonDS
     sed -i 's#~/retrodeck#'$rdhome'#g' /var/config/melonDS/melonDS.ini
 }
@@ -308,7 +308,7 @@ citra_init() {
     mkdir -pv "$rdhome/saves/n3ds/citra/nand/"
     mkdir -pv "$rdhome/saves/n3ds/citra/sdmc/"
     dir_prep "$rdhome/.logs/citra" "/var/data/citra-emu/log"
-    cp -fv $emuconfigs/citra-qt-config.ini /var/config/citra-emu/qt-config.ini
+    cp -f $emuconfigs/citra-qt-config.ini /var/config/citra-emu/qt-config.ini
     sed -i 's#~/retrodeck#'$rdhome'#g' /var/config/citra-emu/qt-config.ini
     #TODO: do the same with roms folders after new variables is pushed (check even the others qt-emu)
     #But actually everything is always symlinked to retrodeck/roms so it might be not needed
@@ -320,7 +320,7 @@ rpcs3_init() {
     echo "Initializing RPCS3"
     echo "------------------------"
     mkdir -pv /var/config/rpcs3/
-    cp -fvr $emuconfigs/rpcs3/* /var/config/rpcs3/
+    cp -fr $emuconfigs/rpcs3/* /var/config/rpcs3/
     sed -i 's#/home/deck/retrodeck#'$rdhome'#g' /var/config/rpcs3/vfs.yml
 }
 
@@ -329,7 +329,7 @@ xemu_init() {
     echo "Initializing XEMU"
     echo "------------------------"
     mkdir -pv $rdhome/saves/xbox/xemu/
-    cp -fv $emuconfigs/xemu.toml /var/data/xemu/xemu.toml
+    cp -f $emuconfigs/xemu.toml /var/data/xemu/xemu.toml
     sed -i 's#/home/deck/retrodeck#'$rdhome'#g' /var/data/xemu/xemu.toml
     # Preparing HD dummy Image if the image is not found
     if [ ! -f $rdhome/bios/xbox_hdd.qcow2 ]
@@ -345,7 +345,7 @@ ppssppsdl_init() {
     echo "Initializing PPSSPPSDL"
     echo "------------------------"
     mkdir -p /var/config/ppsspp/PSP/SYSTEM/
-    cp -fv $emuconfigs/ppssppsdl/* /var/config/ppsspp/PSP/SYSTEM/
+    cp -f $emuconfigs/ppssppsdl/* /var/config/ppsspp/PSP/SYSTEM/
     sed -i 's#/home/deck/retrodeck#'$rdhome'#g' /var/config/ppsspp/PSP/SYSTEM/ppsspp.ini
 }
 
@@ -354,7 +354,7 @@ duckstation_init() {
     echo "Initializing DUCKSTATION"
     echo "------------------------"
     mkdir -p /var/config/duckstation/
-    cp -fv $emuconfigs/duckstation/* /var/config/duckstation
+    cp -f $emuconfigs/duckstation/* /var/config/duckstation
     sed -i 's#/home/deck/retrodeck/bios#'$rdhome/bios'#g' /var/config/ppsspp/PSP/SYSTEM/settings.ini
 }
 
