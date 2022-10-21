@@ -369,7 +369,7 @@ configurator_move_dialog() {
                     configurator_move_dialog
                 else
                     configurator_generic_dialog "Moving RetroDECK data folder to $destination"
-                    debug_dialog "rm /home/deck/retrodeck" # Remove symlink for $rdhome
+                    debug_dialog "unlink /home/deck/retrodeck" # Remove symlink for $rdhome
                     debug_dialog "move $sdcard/retrodeck "/home/deck/""
                     debug_dialog "roms_folder="$rdhome/roms""
                     debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
@@ -387,6 +387,9 @@ configurator_move_dialog() {
                         configurator_welcome_dialog
                     else
                         configurator_generic_dialog "Moving RetroDECK data folder to $destination"
+                        if [[ -L $rdhome/roms ]]; then # Check for ROMs symlink user may have created
+                            debug dialog "unlink $rdhome/roms"
+                        fi
                         debug_dialog "dir_prep "$sdcard/retrodeck" $rdhome"
                         debug_dialog "roms_folder="$sdcard/retrodeck/roms""
                         debug_dialog "dir_prep $roms_folder "/var/config/emulationstation/ROMs""
