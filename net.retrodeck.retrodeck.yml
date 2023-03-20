@@ -109,6 +109,8 @@ modules:
     buildsystem: simple
     build-commands:
 
+      - mkdir -p ${FLATPAK_DEST}/retrodeck
+
       - cp retrodeck.sh /app/bin/retrodeck.sh
       - chmod +x /app/bin/retrodeck.sh
 
@@ -117,17 +119,6 @@ modules:
       - cp global.sh /app/libexec/global.sh
       - cp functions.sh /app/libexec/functions.sh
       - cp post_update.sh /app/libexec/post_update.sh
-
-      # Desktop entry
-      - cp net.retrodeck.retrodeck.desktop /app/share/applications/net.retrodeck.retrodeck.desktop
-
-      # TODO: group the configs per-emu and optimize the following cps, like already done with Dolphin. Please not that some files may be renamed, check retrodeck.sh to know how (and fix it after the edit)
-
-      # Initializing default emulator configs
-      - cp -r emu-configs ${FLATPAK_DEST}/retrodeck/emu-configs/
-
-      # Overlays
-      #- cp -r overlays ${FLATPAK_DEST}/retrodeck/overlays Disabled in 0.4.2b as it will be introduced in 0.5.0b
 
       # Placing appdata
       - mkdir -p ${FLATPAK_DEST}/share/appdata
