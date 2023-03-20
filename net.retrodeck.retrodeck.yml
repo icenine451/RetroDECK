@@ -93,6 +93,16 @@ modules:
         url: https://github.com/cmatomic/VLCplayer-AppImage/releases/download/3.0.11.1/VLC_media_player-3.0.11.1-x86_64.AppImage
         sha256: c4f4967d975660efa2cab2e489b8590b96ffba0b982572637f54317cd43e8963
 
+  - name: rsync
+    buildsystem: simple
+    build-commands:
+      - ./configure
+      - make
+    sources:
+      - type: git
+        url: https://github.com/WayneD/rsync.git
+        commit: 0698ea9aeb4044d615dc0ff2c6da24cea1bcc98e
+
     # External manifests end
 
   - name: retrodeck
