@@ -80,6 +80,18 @@ modules:
         url: https://github.com/rclone/rclone/releases/download/v1.61.1/rclone-v1.61.1-linux-amd64.zip
         sha256: 6d6455e1cb69eb0615a52cc046a296395e44d50c0f32627ba8590c677ddf50a9
 
+  - name: VLC
+    buildsystem: simple
+    build-commands:
+      - chmod +x VLC*.AppImage
+      - ./VLC*.AppImage --appimage-extract
+      - mkdir -p "${FLATPAK_DEST}/vlc"
+      - cp -r squashfs-root/* "${FLATPAK_DEST}/vlc"
+      - ln -s "${FLATPAK_DEST}/vlc/usr/bin/yuzu" "${FLATPAK_DEST}/bin/vlc"
+    sources:
+      - type: file
+        url: https://github.com/cmatomic/VLCplayer-AppImage/releases/download/3.0.11.1/VLC_media_player-3.0.11.1-x86_64.AppImage
+        sha256: c4f4967d975660efa2cab2e489b8590b96ffba0b982572637f54317cd43e8963
 
     # External manifests end
 
