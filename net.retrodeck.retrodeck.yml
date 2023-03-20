@@ -96,7 +96,7 @@ modules:
   - name: rsync
     buildsystem: simple
     build-commands:
-      - ./configure
+      - ./configure --disable-md2man --disable-xxhash
       - make
     sources:
       - type: git
@@ -108,29 +108,6 @@ modules:
   - name: retrodeck
     buildsystem: simple
     build-commands:
-
-      # Initializing RO retrodeck config folder
-      - mkdir -p ${FLATPAK_DEST}/retrodeck
-
-      # Prep the ES-DE and RetroArch config files - I will have to SED/XMLSTARLET them soon
-      - rm -rf /app/share/emulationstation/resources/systems/unix/es_find_rules.xml
-      - cp es-configs/es_find_rules.xml /app/share/emulationstation/resources/systems/unix/
-      - rm -rf /app/share/emulationstation/resources/systems/unix/es_systems.xml
-      - cp es-configs/es_systems.xml /app/share/emulationstation/resources/systems/unix/
-      # These must be put in home folder, managed by retrodeck.sh
-      - cp es-configs/es_settings.xml ${FLATPAK_DEST}/retrodeck/es_settings.xml
-
-      # Logo, res, move graphics directory away from default location so splash can be changed after build
-      - mv -f -t ${FLATPAK_DEST}/retrodeck /app/share/emulationstation/resources/graphics
-      - cp -f res/splash.svg ${FLATPAK_DEST}/retrodeck/graphics/splash.svg
-      - cp -f res/splash.svg ${FLATPAK_DEST}/retrodeck/graphics/splash-orig.svg
-      - cp -rf res/extra-splashes/ ${FLATPAK_DEST}/retrodeck/graphics
-      - cp -f res/icon.svg /app/share/icons/hicolor/scalable/apps/net.retrodeck.retrodeck.svg
-
-      # Tools
-      - mkdir -p ${FLATPAK_DEST}/retrodeck/tools/
-      - cp tools/* ${FLATPAK_DEST}/retrodeck/tools/
-      - mv -f es-configs/tools-gamelist.xml ${FLATPAK_DEST}/retrodeck/
 
       - cp retrodeck.sh /app/bin/retrodeck.sh
       - chmod +x /app/bin/retrodeck.sh
@@ -158,5 +135,5 @@ modules:
 
     sources:
       - type: git
-        url: https://github.com/XargonWan/RetroDECK.git
-        branch: cooker-0.6.2b
+        url: https://github.com/icenine451/RetroDECK.git
+        branch: manifest-experiments
