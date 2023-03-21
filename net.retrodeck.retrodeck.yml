@@ -58,8 +58,6 @@ cleanup-commands:
 
 modules:
 
-  - rd-submodules/shared-modules/libusb/libusb.json
-
   - name: chdman-tool
     buildsystem: simple
     build-commands:
@@ -90,6 +88,16 @@ modules:
       - type: git
         url: https://github.com/WayneD/rsync.git
         commit: 0698ea9aeb4044d615dc0ff2c6da24cea1bcc98e
+
+  - name: vlc
+    buildsystem: simple
+    build-commands:
+      - ./configure
+      - make
+    sources:
+      - type: archive
+        url: https://get.videolan.org/vlc/3.0.18/vlc-3.0.18.tar.xz
+        sha256: 57094439c365d8aa8b9b41fa3080cc0eef2befe6025bb5cef722accc625aedec
 
     # External manifests end
 
