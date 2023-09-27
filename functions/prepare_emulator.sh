@@ -534,7 +534,7 @@ prepare_emulator() {
     fi
     if [[ "$action" == "postmove" ]]; then # Run only post-move commands
       # This is an unfortunate one-off because set_setting_value does not currently support settings with $ in the name.
-      sed -i 's^\^$(EmulatorDir): .*^$(EmulatorDir): '"$bios_folder/rpcs3"'^' "$rpcs3vfsconf"
+      sed -i 's^\^$(EmulatorDir): .*^$(EmulatorDir): '"$bios_folder/rpcs3/"'^' "$rpcs3vfsconf"
       set_setting_value "$rpcs3vfsconf" "/games/" "$roms_folder/ps3" "rpcs3"
     fi
   fi
